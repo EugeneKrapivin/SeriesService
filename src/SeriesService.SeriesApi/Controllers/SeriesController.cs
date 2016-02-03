@@ -25,11 +25,17 @@ namespace SeriesService.SeriesApi.Controllers
         }
 
         [HttpGet, Route("{series}")]
-        public async Task<IActionResult> GetSeriesElement(string series, int n)
+        public async Task<IActionResult> GetSeriesElement(string series, int? n = null)
         {
+            if (n == null)
+            {
+                var message = "Must pass integer 'n' value as query parameter";
+                _logger?.LogError(message);
+                return new BadRequestObjectResult(message);
+            }
             try
             {
-                return Json(new { series, index = n, result = await _seriesLogic.Evalute(series, n) });
+                return Json(new { series, index = n, result = await _seriesLogic.Evalute(series, n.Value) });
             }
             catch (Exception ex)
             {
